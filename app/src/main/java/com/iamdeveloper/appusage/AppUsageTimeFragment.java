@@ -117,6 +117,7 @@ public class AppUsageTimeFragment extends Fragment {
         final String stat;
         try {
             stat = reader.readLine();
+            Log.i("GetTime",stat);
         } finally {
             reader.close();
         }
@@ -127,15 +128,15 @@ public class AppUsageTimeFragment extends Fragment {
         try {
             final String[] fields = stat.substring(stat.lastIndexOf(field2End)).split(fieldSep);
             final long t = Long.parseLong(fields[fieldStartTime]);
+            Log.i("t",String.valueOf(t));
             final int tckName = Class.forName("libcore.io.OsConstants").getField("_SC_CLK_TCK").getInt(null);
+            Log.i("tckName", String.valueOf(tckName));
             final Object os = Class.forName("libcore.io.Libcore").getField("os").get(null);
+            Log.i("Object",os.toString());
             final long tck = (Long) os.getClass().getMethod("sysconf", Integer.TYPE).invoke(os, tckName);
+            Log.i("tck", String.valueOf(tck));
             return t * msInSec / tck;
-        } catch (final NumberFormatException e) {
-            throw new IOException(e);
-        } catch (final IndexOutOfBoundsException e) {
-            throw new IOException(e);
-        } catch (ReflectiveOperationException e) {
+        } catch (final NumberFormatException | ReflectiveOperationException | IndexOutOfBoundsException e) {
             throw new IOException(e);
         }
     }
